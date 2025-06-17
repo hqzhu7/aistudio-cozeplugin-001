@@ -32,7 +32,8 @@ export async function handleChatRequest(request: Request): Promise<Response> {
       messageList: body.messageList,
       apikey: body.apikey,
       systemInstruction: body.systemInstruction,
-      temperature: body.temperature
+      temperature: body.temperature,
+      intention_setting: body.intention_setting
     };
 
     // 调用AI服务
