@@ -49,6 +49,9 @@ export interface IntentionResult {
   content: string;
 }
 
+// 允许null值的IntentionResult类型
+export type IntentionResultOrNull = IntentionResult | null;
+
 export interface AIRequest {
   input?: string | Array<MessageObject>;
   messageList?: Array<MessageObject>;
@@ -99,7 +102,7 @@ export async function processAIRequest(request: AIRequest): Promise<AIResponse> 
     }
 
     // 处理input类型判断和转换
-    let contents: any;
+    let contents: string | Array<{role: string, parts: Array<{text: string}>}>;
     if (typeof inputData === 'string') {
       // 如果是字符串，直接使用
       contents = inputData;
@@ -188,8 +191,8 @@ export async function processAIRequest(request: AIRequest): Promise<AIResponse> 
       
       // 解析JSON响应
       try {
-        const jsonResponse = JSON.parse(response.text);
-        const intentionResults: {[key: string]: IntentionResult} = {};
+        const jsonResponse = JSON.parse(response.text || "");
+        const intentionResults: {[key: string]: IntentionResultOrNull} = {};
         
         // 初始化所有意图结果为空
         for (let i = 1; i <= 5; i++) {
@@ -265,7 +268,7 @@ export async function processAIRequest(request: AIRequest): Promise<AIResponse> 
         return {
           success: false,
           error: "Failed to parse JSON response",
-          details: error.message
+          details: error instanceof Error ? error.message : String(error)
         };
       }
     } else {
@@ -293,7 +296,7 @@ export async function processAIRequest(request: AIRequest): Promise<AIResponse> 
     return {
       success: false,
       error: "Internal server error",
-      details: error.message
+      details: error instanceof Error ? error.message : String(error)
     };
   }
 }
