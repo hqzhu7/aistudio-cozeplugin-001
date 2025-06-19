@@ -64,7 +64,7 @@ export async function handleChatRequest(request: Request): Promise<Response> {
       JSON.stringify({ 
         success: false,
         error: "Failed to parse request", 
-        details: error.message 
+        details: error instanceof Error ? error.message : String(error) 
       }),
       { 
         status: 400, 
